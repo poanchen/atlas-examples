@@ -22,10 +22,6 @@ int main()
 
     Application::getInstance().createWindow(settings);
 
-    // The tools submodule provides some pre-built classes that you can use
-    // in your application to save time. An example of this is the Modelling 
-    // Scene, which provides you with a 3D camera, a reference grid, and a simple
-    // GUI.
     Application::getInstance().addScene(ScenePointer(new ModelViewer));
 
     Application::getInstance().runApplication();

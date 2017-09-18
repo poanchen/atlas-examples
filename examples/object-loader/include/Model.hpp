@@ -14,7 +14,10 @@ public:
     Model(std::string const& filename, std::string const& mtl = "", 
         bool triangulate = true);
 
+    // Override this to render!
     void renderGeometry() override;
+    
+    // Override this to draw a GUI.
     void drawGui() override;
 
 private:

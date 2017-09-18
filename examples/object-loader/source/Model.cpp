@@ -53,6 +53,7 @@ Model::Model(std::string const& filename, std::string const& mtl,
     mIndexBuffer.bindBuffer();
     mIndexBuffer.bufferData(gl::size<GLuint>(mMesh.indices().size()),
         mMesh.indices().data(), GL_DYNAMIC_DRAW);
+    mIndexBuffer.unBindBuffer();
     mVao.unBindVertexArray();
 
     // Load the shaders here.

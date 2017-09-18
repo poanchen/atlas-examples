@@ -12,6 +12,7 @@ class ModelViewer : public atlas::tools::ModellingScene
 public:
     ModelViewer();
 
+    // Override this function so you can render your own code!
     void renderScene() override;
 
 private:

@@ -60,9 +60,12 @@ void ModelViewer::renderScene()
         1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
     ImGui::End();
 
+    // If you are using GUI's for your geometries, call it here.
     mModels[mCurrentModel].drawGui();
 
+    // Make sure you call this so the GUI gets drawn!
     ImGui::Render();
 
+    // Render your models.
     mModels[mCurrentModel].renderGeometry();
 }
