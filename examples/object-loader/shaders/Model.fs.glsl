@@ -47,8 +47,7 @@ vec3 shadedColour()
 
     return materialAmbientColour + 
         materialDiffuseColour * lightColour * lightPower * 
-        cosTheta / (dist * dist) + materialSpecularColour * lightColour * 
-        lightPower * pow(cosAlpha, 5) / (dist * dist);
+        cosTheta / (dist * dist); 
 }
 
 vec4 idNormal()

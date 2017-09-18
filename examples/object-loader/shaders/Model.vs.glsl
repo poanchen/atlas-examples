@@ -33,7 +33,7 @@ void main()
 
     // Vertex to light.
     vec3 lightPos = (view * vec4(Light, 1.0)).xyz;
-    outData.lightDirection = lightPos + outData.eyeDirection;
+    outData.lightDirection = outData.eyeDirection;
 
     // Vertex normal.
     outData.normal = (view * model * vec4(normal, 0)).xyz;
