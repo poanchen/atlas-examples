@@ -7,3 +7,14 @@ html/
 # Generated files #
 generated/
 doc/html/
+
+# CMake generated files/folders #
+**/**/Makefile
+**/**/CMakeFiles
+**/**/*.cmake
+CMakeCache.txt
+**/**/.ini
+*.glsl
+*.ini
+install_manifest.txt
+**/**/data
