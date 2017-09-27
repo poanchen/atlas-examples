@@ -14,7 +14,6 @@ doc/html/
 **/**/*.cmake
 CMakeCache.txt
 **/**/.ini
-*.glsl
 *.ini
 install_manifest.txt
 **/**/data
