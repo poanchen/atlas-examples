@@ -7,6 +7,7 @@ Suite of simple examples showcasing the Atlas framework.
 
 ```
 git clone --recursive https://github.com/poanchen/atlas-examples.git
+cd atlas-examples/
 cmake CMakeLists.txt
 make
 ```
