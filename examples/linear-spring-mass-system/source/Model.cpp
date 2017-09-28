@@ -21,6 +21,7 @@ Model::Model(std::string const& filename, std::string const& mtl,
     sks(1.0f),
     kd(0.4f),
     sip(math::Vector(0.0000001f, 0.0000001f, 0.0000001f)),
+
     // mass
     mpt(math::Vector(0.0000001f, -20.0f, 0.0000001f)), // initial position
     mvt(math::Vector(0.0f, 3.0f, 0.0f)), // initial velocity
@@ -104,7 +105,6 @@ void Model::renderGeometry()
     {
         // Point cloud.
         auto verts = mMesh.vertices().size();
-        // printf("%d\n", verts);
         glDrawArrays(GL_POINTS, 0, (GLsizei)verts);
     }
     else if (mRenderMode == 1)
@@ -153,18 +153,10 @@ void Model::updateGeometry(atlas::core::Time<> const& t)
     f[1] = fs[1] + fd[1] + fg[1];
     f[2] = fs[2] + fd[2] + fg[2];
 
-    // printf("fd1:%f\n", fd[0]);
-    // printf("fd2:%f\n", fd[1]);
-    // printf("fd3:%f\n", fd[2]);
-
     // Update mass position
     mpt[0] = mpt[0] + (t.currentTime/100 * mvt[0]);
     mpt[1] = mpt[1] + (t.currentTime/100 * mvt[1]);
     mpt[2] = mpt[2] + (t.currentTime/100 * mvt[2]);
-
-    // printf("x:%f\n", mpt[0]);
-    // printf("y:%f\n", mpt[1]);
-    // printf("z:%f\n", mpt[2]);
 
     // Update mass velocity
     mvt[0] = mvt[0] + ((t.currentTime/100 * f[0]) / mw);
@@ -172,12 +164,8 @@ void Model::updateGeometry(atlas::core::Time<> const& t)
     mvt[2] = mvt[2] + ((t.currentTime/100 * f[2]) / mw);
 
     auto translate = glm::translate(math::Matrix4(1.0f), mpt);
-    // auto translate = glm::translate(math::Matrix4(1.0f), math::Vector(0, 2, 0));
-    // auto rotate = glm::rotate(math::Matrix4(1.0f),
-        // glm::radians(10.0f * t.currentTime), math::Vector(0, 1, 0));
 
     mModel = translate;
-    // mModel = rotate * translate;
 }
 
 void Model::drawGui()
