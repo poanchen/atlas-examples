@@ -4,7 +4,7 @@ Suite of simple examples showcasing the Atlas framework.
 # Getting Started
 
 ## Requirements
-- GLX core profile version: 4.3+
+- GLX core profile version: 4.1+ (It was ONLY works for 4.3+, with the help of [@marovira](https://github.com/marovira), it is now supported 4.1+)
 
 Here is my version of OpenGL on my laptop that works.
 ```
