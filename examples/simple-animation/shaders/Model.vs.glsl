@@ -1,4 +1,4 @@
-#version 430 core
+#version 410 core
 
 #include "LayoutLocations.glsl"
 
@@ -6,7 +6,9 @@ layout(location = VERTICES_LAYOUT_LOCATION) in vec3 position;
 layout(location = NORMALS_LAYOUT_LOCATION) in vec3 normal;
 layout(location = TEX_COORDS_LAYOUT_LOCATION) in vec2 texCoord;
 
-#include "UniformMatrices.glsl"
+uniform mat4 projection;
+uniform mat4 view;
+uniform mat4 model;
 
 out VertexData
 {

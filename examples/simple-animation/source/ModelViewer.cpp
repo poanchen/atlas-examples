@@ -65,7 +65,7 @@ void ModelViewer::renderScene()
 
     ImGui::Render();
 
-    mModels[mCurrentModel].renderGeometry();
+    mModels[mCurrentModel].renderGeometry(mProjection, mView);
 }
 
 void ModelViewer::updateScene(double time)

@@ -17,3 +17,6 @@ CMakeCache.txt
 *.ini
 install_manifest.txt
 **/**/data
+
+# Unnecessary file from Apple macOS #
+**/**/.DS_Store
