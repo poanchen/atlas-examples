@@ -16,7 +16,7 @@ int main()
         ATLAS_GL_ERROR_SEVERITY_MEDIUM);
 
     WindowSettings settings;
-    settings.contextVersion = ContextVersion(4, 5);
+    settings.contextVersion = ContextVersion(4, 1);
     settings.isForwardCompat = true;
     settings.isMaximized = true;
 

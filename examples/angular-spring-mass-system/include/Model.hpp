@@ -14,7 +14,8 @@ public:
     Model(std::string const& filename, std::string const& mtl = "", 
         bool triangulate = true);
 
-    void renderGeometry() override;
+    void renderGeometry(atlas::math::Matrix4 const& projection,
+                        atlas::math::Matrix4 const& view) override;
 
     // Override this to animate things.
     void updateGeometry(atlas::core::Time<> const& t) override;

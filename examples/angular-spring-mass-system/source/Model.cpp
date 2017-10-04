@@ -78,11 +78,15 @@ Model::Model(std::string const& filename, std::string const& mtl,
 
     auto var = mShaders[0].getUniformVariable("model");
     mUniforms.insert(UniformKey("model", var));
+    var = mShaders[0].getUniformVariable("projection");
+    mUniforms.insert(UniformKey("projection", var));
+    var = mShaders[0].getUniformVariable("view");
+    mUniforms.insert(UniformKey("view", var));
     var = mShaders[0].getUniformVariable("renderMode");
     mUniforms.insert(UniformKey("renderMode", var));
 }
 
-void Model::renderGeometry()
+void Model::renderGeometry(atlas::math::Matrix4 const& projection, atlas::math::Matrix4 const& view)
 {
     mShaders[0].hotReloadShaders();
     if (!mShaders[0].shaderProgramValid())
@@ -91,6 +95,8 @@ void Model::renderGeometry()
     }
     mShaders[0].enableShaders();
 
+    glUniformMatrix4fv(mUniforms["projection"], 1, GL_FALSE, &projection[0][0]);
+    glUniformMatrix4fv(mUniforms["view"], 1, GL_FALSE, &view[0][0]);
     glUniformMatrix4fv(mUniforms["model"], 1, GL_FALSE, &mModel[0][0]);
     glUniform1i(mUniforms["renderMode"], mRenderMode);
 
