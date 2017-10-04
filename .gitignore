@@ -20,3 +20,6 @@ install_manifest.txt
 
 # Unnecessary file from Apple macOS #
 **/**/.DS_Store
+
+# QT CMake configuration file #
+CMakeLists.txt.user
