@@ -17,6 +17,7 @@ CMakeCache.txt
 *.ini
 install_manifest.txt
 **/**/data
+atlas-examples.cbp
 
 # Unnecessary file from Apple macOS #
 **/**/.DS_Store
