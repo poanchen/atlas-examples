@@ -3,6 +3,9 @@
 
 #pragma once
 
+#define CLOTH_DEFAULT_MASS_WEIGHT 0.2f;
+#define CLOTH_DEFAULT_MASS_NO_NEIGHBOUR -1;
+
 #include "atlas/tools/Tools.hpp"
 #include "atlas/utils/Geometry.hpp"
 #include "atlas/gl/VertexArrayObject.hpp"
@@ -24,12 +27,28 @@ public:
     void updateGeometry(atlas::core::Time<> const& t) override;
 
 private:
+    struct neighbour {
+        int index; // when index is -1, that means it does not have neighbour for that position
+        struct {
+            float sks; // spring coefficient
+            float kd; // spring damping force
+            float sl; // spring length
+        };
+    };
+
+    struct mass {
+        math::Vector pos;
+        float weight;
+        struct neighbour neighbours[12];
+    };
+
+private:
     atlas::gl::VertexArrayObject mVao;
     atlas::gl::Buffer mVertexBuffer;
 //    atlas::gl::Buffer mIndexBuffer;
-    std::size_t mNumIndices;
+    std::size_t mNumIndices; // assume it can be made up as a square
 //    int mRenderMode;
-    std::vector<math::Vector> vertices;
+    std::vector<mass> meshes;
 };
 
 #endif

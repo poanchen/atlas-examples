@@ -34,15 +34,14 @@ namespace gl = atlas::gl;
 //}
 //)";
 
-
 Cloth::Cloth() :
     mVertexBuffer(GL_ARRAY_BUFFER),
 //    mIndexBuffer(GL_ELEMENT_ARRAY_BUFFER),
 //    mRenderMode(1),
 //    mNumIndices(150),
-//    mNumIndices(15),
-    mNumIndices(4),
-    vertices(std::vector<math::Vector>(mNumIndices))
+    mNumIndices(16),
+//    mNumIndices(4),
+    meshes(mNumIndices)
 {
     mModel = math::Matrix4(1.0f);
 
@@ -51,24 +50,143 @@ Cloth::Cloth() :
 //    {
 //        for (int j = 0; j < 10; j++)
 //        {
-//            vertices[10 * i + j] = { 0.0f + j + i, 0.0f, 0.0f - j };
+//            meshes[10 * i + j].pos = { 0.0f + j + i, 0.0f, 0.0f - j };
 //        }
 //    }
 
-//    15
-//    for (int i = 0; i < 5; i++)
-//    {
-//        for (int j = 0; j < 3; j++)
-//        {
-//            vertices[3 * i + j] = { 0.0f + j + i, 0.0f, 0.0f - j };
-//        }
-//    }
+    int height = (int) std::sqrt(mNumIndices);
+    int width = height;
+    for (int i = 0; i < height; i++)
+    {
+        for (int j = 0; j < width; j++)
+        {
+            meshes[width * i + j].pos = { 0.0f + j + i, 0.0f, 0.0f - j };
+            meshes[width * i + j].weight = CLOTH_DEFAULT_MASS_WEIGHT;
+
+            /*
+            * define its neighbour
+            * Structural springs
+            *
+            *      0
+            *      |
+            *    1-x-2
+            *      |
+            *      3
+            *
+            */
+            // CLOTH_DEFAULT_MASS_NO_NEIGHBOUR
+            std::printf("Index: %d with ", width * i + j);
+            std::printf("[%d, %d] =>", i, j);
+            // if there is up
+            if (i == 0) {
+                std::printf("no top");
+                std::printf(",");
+            }
+            // if there is buttom
+            if (i + 1 == height) {
+                std::printf("no buttom");
+                std::printf(",");
+            }
+            // if there is right
+            if (j + 1 == width) {
+                std::printf("no right");
+                std::printf(",");
+            }
+            // if there is left
+            if (j == 0) {
+                std::printf("no left");
+                std::printf(",");
+            }
+//            std::printf("\n");
+
+//            meshes[3 * i + j].neighbours[0].
+//            meshes[3 * i + j].neighbours[1].
+//            meshes[3 * i + j].neighbours[2].
+//            meshes[3 * i + j].neighbours[3].
+            /* Shear springs
+            *
+            *    5     6
+            *     \   /
+            *       x
+            *     /   \
+            *    7     8
+            *
+            */
+            // if there is top right
+            if (i == 0 || j + 1 == width) {
+                std::printf("no top right");
+                std::printf(",");
+            }
+            // if there is top left
+            if (i == 0 || j == 0) {
+                std::printf("no top left");
+                std::printf(",");
+            }
+            // if there is buttom right
+            if (i + 1 == height || j + 1 == width) {
+                std::printf("no buttom right");
+                std::printf(",");
+            }
+            // if there is buttom left
+            if (i + 1 == height || j == 0) {
+                std::printf("no buttom left");
+                std::printf(",");
+            }
+//            std::printf("\n");
+//            meshes[3 * i + j].neighbours[5].
+//            meshes[3 * i + j].neighbours[6].
+//            meshes[3 * i + j].neighbours[7].
+//            meshes[3 * i + j].neighbours[8].
+            /* Bending springs
+            *
+            *       9
+            *       |
+            *       0
+            *       |
+            *  10-1-x-2-11
+            *       |
+            *       3
+            *       |
+            *       12
+            *
+            */
+            // if there is up up
+            if (i - 2 < 0) {
+                std::printf("no top top");
+                std::printf(",");
+            }
+            // if there is buttom buttom
+            if (i + 2 > height - 1) {
+                std::printf("no buttom buttom");
+                std::printf(",");
+            }
+            // if there is right right
+            if (j + 2 > width - 1) {
+                std::printf("no right right");
+                std::printf(",");
+            }
+            // if there is left left
+            if (j - 2 < 0) {
+                std::printf("no left left");
+                std::printf(",");
+            }
+            std::printf("\n");
+//            meshes[3 * i + j].neighbours[9].
+//            meshes[3 * i + j].neighbours[10].
+//            meshes[3 * i + j].neighbours[11].
+//            meshes[3 * i + j].neighbours[12].
+        }
+    }
 
 //    4
-    vertices[0] = { 0.0f, 0.0f, 0.0f };
-    vertices[1] = { 10.0f, 0.0f, -10.0f };
-    vertices[2] = { 0.0f, 0.0f, 10.0f };
-    vertices[3] = { 10.0f, 0.0f, 0.0f };
+//    meshes[0].pos = { 0.0f, 0.0f, 0.0f };
+//    meshes[0].weight = CLOTH_DEFAULT_MASS_WEIGHT;
+//    meshes[1].pos = { 10.0f, 0.0f, -10.0f };
+//    meshes[1].weight = CLOTH_DEFAULT_MASS_WEIGHT;
+//    meshes[2].pos = { 0.0f, 0.0f, 10.0f };
+//    meshes[2].weight = CLOTH_DEFAULT_MASS_WEIGHT;
+//    meshes[3].pos = { 10.0f, 0.0f, 0.0f };
+//    meshes[3].weight = CLOTH_DEFAULT_MASS_WEIGHT;
 
 //    std::vector<gl::ShaderUnit> shaders
 //    {
@@ -82,17 +200,17 @@ Cloth::Cloth() :
 
     mVao.bindVertexArray();
     mVertexBuffer.bindBuffer();
-    mVertexBuffer.bufferData(gl::size<math::Vector>(mNumIndices),
-        vertices.data(), GL_DYNAMIC_DRAW);
+    mVertexBuffer.bufferData(sizeof(struct mass) * meshes.size(),
+        meshes.data(), GL_DYNAMIC_DRAW);
     // try using CLOTHS_LAYOUT_LOCATION
-    mVertexBuffer.vertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0,
+    mVertexBuffer.vertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(struct mass),
         gl::bufferOffset<float>(0));
     mVao.enableVertexAttribArray(0);
     mVertexBuffer.unBindBuffer();
 
 //    mIndexBuffer.bindBuffer();
 //    mIndexBuffer.bufferData(gl::size<GLuint>(mNumIndices),
-//        vertices.data(), GL_DYNAMIC_DRAW);
+//        meshes.data(), GL_DYNAMIC_DRAW);
     mVao.unBindVertexArray();
 
     // Load the shaders here.
@@ -167,14 +285,14 @@ void Cloth::renderGeometry(math::Matrix4 const& projection,
 
 void Cloth::updateGeometry(atlas::core::Time<> const& t)
 {
-    vertices[0][0] -= 0.1f;
-    vertices[1][0] += 0.1f;
+//    meshes[0].pos[0] -= 0.1f;
+//    meshes[1].pos[2] += 0.1f;
 
     // update position
     mVao.bindVertexArray();
     mVertexBuffer.bindBuffer();
-    mVertexBuffer.bufferData(gl::size<math::Vector>(mNumIndices),
-        vertices.data(), GL_DYNAMIC_DRAW);
+    mVertexBuffer.bufferData(sizeof(struct mass) * meshes.size(),
+        meshes.data(), GL_DYNAMIC_DRAW);
     mVertexBuffer.unBindBuffer();
     mVao.unBindVertexArray();
 }
