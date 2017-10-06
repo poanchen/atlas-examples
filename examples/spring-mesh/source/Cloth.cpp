@@ -60,7 +60,7 @@ Cloth::Cloth() :
     {
         for (int j = 0; j < width; j++)
         {
-            meshes[width * i + j].pos = { 0.0f + j + i, 0.0f, 0.0f - j };
+            meshes[width * i + j].pos = { 0.0f + j + i, 0.0f, 0.0f - j};
             meshes[width * i + j].weight = CLOTH_DEFAULT_MASS_WEIGHT;
 
             /*
@@ -81,47 +81,35 @@ Cloth::Cloth() :
             if (i == 0) {
                 //std::printf("no top");
                 //std::printf(",");
-                meshes[3 * i + j].neighbours[0].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
+                meshes[width * i + j].neighbours[0].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
             } else {
-                // update the index
-                // update its spring coefficient
-                // update its spring damping force
-                // update its spring length
+                meshes[width * i + j].neighbours[0] = { width * i + j - width, { CLOTH_DEFAULT_SPRING_SKS, CLOTH_DEFAULT_SPRING_KD, CLOTH_DEFAULT_SPRING_SL } };
             }
             // if there is buttom
             if (i + 1 == height) {
                 //std::printf("no buttom");
                 //std::printf(",");
-                meshes[3 * i + j].neighbours[1].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
+                meshes[width * i + j].neighbours[1].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
             } else {
-                // update the index
-                // update its spring coefficient
-                // update its spring damping force
-                // update its spring length
+                meshes[width * i + j].neighbours[1] = { width * i + j + width, { CLOTH_DEFAULT_SPRING_SKS, CLOTH_DEFAULT_SPRING_KD, CLOTH_DEFAULT_SPRING_SL } };
             }
             // if there is right
             if (j + 1 == width) {
                 //std::printf("no right");
                 //std::printf(",");
-                meshes[3 * i + j].neighbours[2].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
+                meshes[width * i + j].neighbours[2].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
             } else {
-                // update the index
-                // update its spring coefficient
-                // update its spring damping force
-                // update its spring length
+                meshes[width * i + j].neighbours[2] = { width * i + j + 1, { CLOTH_DEFAULT_SPRING_SKS, CLOTH_DEFAULT_SPRING_KD, CLOTH_DEFAULT_SPRING_SL } };
             }
             // if there is left
             if (j == 0) {
                 //std::printf("no left");
                 //std::printf(",");
-                meshes[3 * i + j].neighbours[3].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
+                meshes[width * i + j].neighbours[3].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
             } else {
-                // update the index
-                // update its spring coefficient
-                // update its spring damping force
-                // update its spring length
+                meshes[width * i + j].neighbours[3] = { width * i + j - 1, { CLOTH_DEFAULT_SPRING_SKS, CLOTH_DEFAULT_SPRING_KD, CLOTH_DEFAULT_SPRING_SL } };
             }
-//            std::printf("\n");
+            //std::printf("\n");
             /* Shear springs
             *
             *    5     6
@@ -135,45 +123,33 @@ Cloth::Cloth() :
             if (i == 0 || j + 1 == width) {
                 //std::printf("no top right");
                 //std::printf(",");
-                meshes[3 * i + j].neighbours[4].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
+                meshes[width * i + j].neighbours[4].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
             } else {
-                // update the index
-                // update its spring coefficient
-                // update its spring damping force
-                // update its spring length
+                meshes[width * i + j].neighbours[4] = { width * i + j - width + 1, { CLOTH_DEFAULT_SPRING_SKS, CLOTH_DEFAULT_SPRING_KD, CLOTH_DEFAULT_SPRING_SL } };
             }
             // if there is top left
             if (i == 0 || j == 0) {
                 //std::printf("no top left");
                 //std::printf(",");
-                meshes[3 * i + j].neighbours[5].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
+                meshes[width * i + j].neighbours[5].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
             } else {
-                // update the index
-                // update its spring coefficient
-                // update its spring damping force
-                // update its spring length
+                meshes[width * i + j].neighbours[5] = { width * i + j - width - 1, { CLOTH_DEFAULT_SPRING_SKS, CLOTH_DEFAULT_SPRING_KD, CLOTH_DEFAULT_SPRING_SL } };
             }
             // if there is buttom right
             if (i + 1 == height || j + 1 == width) {
                 //std::printf("no buttom right");
                 //std::printf(",");
-                meshes[3 * i + j].neighbours[6].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
+                meshes[width * i + j].neighbours[6].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
             } else {
-                // update the index
-                // update its spring coefficient
-                // update its spring damping force
-                // update its spring length
+                meshes[width * i + j].neighbours[6] = { width * i + j + width + 1, { CLOTH_DEFAULT_SPRING_SKS, CLOTH_DEFAULT_SPRING_KD, CLOTH_DEFAULT_SPRING_SL } };
             }
             // if there is buttom left
             if (i + 1 == height || j == 0) {
                 //std::printf("no buttom left");
                 //std::printf(",");
-                meshes[3 * i + j].neighbours[7].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
+                meshes[width * i + j].neighbours[7].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
             } else {
-                // update the index
-                // update its spring coefficient
-                // update its spring damping force
-                // update its spring length
+                meshes[width * i + j].neighbours[7] = { width * i + j + width - 1, { CLOTH_DEFAULT_SPRING_SKS, CLOTH_DEFAULT_SPRING_KD, CLOTH_DEFAULT_SPRING_SL } };
             }
 //            std::printf("\n");
             /* Bending springs
@@ -193,49 +169,92 @@ Cloth::Cloth() :
             if (i - 2 < 0) {
                 //std::printf("no top top");
                 //std::printf(",");
-                meshes[3 * i + j].neighbours[8].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
+                meshes[width * i + j].neighbours[8].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
             } else {
-                // update the index
-                // update its spring coefficient
-                // update its spring damping force
-                // update its spring length
+                meshes[width * i + j].neighbours[8] = { width * i + j - width * 2, { CLOTH_DEFAULT_SPRING_SKS, CLOTH_DEFAULT_SPRING_KD, CLOTH_DEFAULT_SPRING_SL } };
             }
             // if there is buttom buttom
             if (i + 2 > height - 1) {
                 //std::printf("no buttom buttom");
                 //std::printf(",");
-                meshes[3 * i + j].neighbours[9].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
+                meshes[width * i + j].neighbours[9].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
             } else {
-                // update the index
-                // update its spring coefficient
-                // update its spring damping force
-                // update its spring length
+                meshes[width * i + j].neighbours[9] = { width * i + j + width * 2, { CLOTH_DEFAULT_SPRING_SKS, CLOTH_DEFAULT_SPRING_KD, CLOTH_DEFAULT_SPRING_SL } };
             }
             // if there is right right
             if (j + 2 > width - 1) {
                 //std::printf("no right right");
                 //std::printf(",");
-                meshes[3 * i + j].neighbours[10].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
+                meshes[width * i + j].neighbours[10].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
             } else {
-                // update the index
-                // update its spring coefficient
-                // update its spring damping force
-                // update its spring length
+                meshes[width * i + j].neighbours[10] = { width * i + j + 2, { CLOTH_DEFAULT_SPRING_SKS, CLOTH_DEFAULT_SPRING_KD, CLOTH_DEFAULT_SPRING_SL } };
             }
             // if there is left left
             if (j - 2 < 0) {
                 //std::printf("no left left");
                 //std::printf(",");
-                meshes[3 * i + j].neighbours[11].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
+                meshes[width * i + j].neighbours[11].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
             } else {
-                // update the index
-                // update its spring coefficient
-                // update its spring damping force
-                // update its spring length
+                meshes[width * i + j].neighbours[11] = { width * i + j - 2, { CLOTH_DEFAULT_SPRING_SKS, CLOTH_DEFAULT_SPRING_KD, CLOTH_DEFAULT_SPRING_SL } };
             }
             //std::printf("\n");
         }
     }
+
+    //debug
+//    for (int i = 0; i < height; i++)
+//    {
+//        for (int j = 0; j < width; j++)
+//        {
+//            std::printf("Index: %d with ", width * i + j);
+//            std::printf("[%d, %d] => ", i, j);
+//            std::printf("weight: %f | ", meshes[width * i + j].weight);
+//            for (int k = 0; k < 12; k++)
+//            {
+//                switch (k) {
+//                case 0:
+//                    std::printf("top: %d, ", meshes[width * i + j].neighbours[k].index);
+//                    break;
+//                case 1:
+//                    std::printf("buttom: %d, ", meshes[width * i + j].neighbours[k].index);
+//                    break;
+//                case 2:
+//                    std::printf("right: %d, ", meshes[width * i + j].neighbours[k].index);
+//                    break;
+//                case 3:
+//                    std::printf("left: %d, ", meshes[width * i + j].neighbours[k].index);
+//                    break;
+//                case 4:
+//                    std::printf("top right: %d, ", meshes[width * i + j].neighbours[k].index);
+//                    break;
+//                case 5:
+//                    std::printf("top left: %d, ", meshes[width * i + j].neighbours[k].index);
+//                    break;
+//                case 6:
+//                    std::printf("buttom right: %d, ", meshes[width * i + j].neighbours[k].index);
+//                    break;
+//                case 7:
+//                    std::printf("buttom left: %d, ", meshes[width * i + j].neighbours[k].index);
+//                    break;
+//                case 8:
+//                    std::printf("top top: %d, ", meshes[width * i + j].neighbours[k].index);
+//                    break;
+//                case 9:
+//                    std::printf("buttom buttom: %d, ", meshes[width * i + j].neighbours[k].index);
+//                    break;
+//                case 10:
+//                    std::printf("right right: %d, ", meshes[width * i + j].neighbours[k].index);
+//                    break;
+//                case 11:
+//                    std::printf("left left: %d, ", meshes[width * i + j].neighbours[k].index);
+//                    break;
+//                default:
+//                    break;
+//                }
+//            }
+//            std::printf("\n");
+//        }
+//    }
 
 //    4
 //    meshes[0].pos = { 0.0f, 0.0f, 0.0f };

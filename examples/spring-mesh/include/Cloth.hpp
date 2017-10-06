@@ -3,8 +3,11 @@
 
 #pragma once
 
-#define CLOTH_DEFAULT_MASS_WEIGHT 0.2f;
-#define CLOTH_DEFAULT_MASS_NO_NEIGHBOUR -1;
+#define CLOTH_DEFAULT_MASS_WEIGHT 0.2f
+#define CLOTH_DEFAULT_MASS_NO_NEIGHBOUR -1
+#define CLOTH_DEFAULT_SPRING_SKS 10.0f
+#define CLOTH_DEFAULT_SPRING_KD 0.6f
+#define CLOTH_DEFAULT_SPRING_SL 0.5f
 
 #include "atlas/tools/Tools.hpp"
 #include "atlas/utils/Geometry.hpp"
