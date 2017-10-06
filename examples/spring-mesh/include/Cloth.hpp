@@ -3,11 +3,15 @@
 
 #pragma once
 
-#define CLOTH_DEFAULT_MASS_WEIGHT 0.2f
+#define CLOTH_DEFAULT_MASS_WEIGHT 2.0f
 #define CLOTH_DEFAULT_MASS_NO_NEIGHBOUR -1
-#define CLOTH_DEFAULT_SPRING_SKS 10.0f
-#define CLOTH_DEFAULT_SPRING_KD 0.6f
+#define CLOTH_DEFAULT_SPRING_SKSS 40.0f
+#define CLOTH_DEFAULT_SPRING_SKSD 35.0f
+#define CLOTH_DEFAULT_SPRING_SKSB 15.0f
+#define CLOTH_DEFAULT_SPRING_KD 0.5f
 #define CLOTH_DEFAULT_SPRING_SL 0.5f
+#define CLOTH_DEFAULT_SPRING_DW 0.7f
+#define CLOTH_DEFAULT_GRAVITY_FORCE -9.087f
 
 #include "atlas/tools/Tools.hpp"
 #include "atlas/utils/Geometry.hpp"
@@ -41,6 +45,7 @@ private:
 
     struct mass {
         math::Vector pos;
+        math::Vector vt;
         float weight;
         struct neighbour neighbours[12];
     };
@@ -51,7 +56,18 @@ private:
 //    atlas::gl::Buffer mIndexBuffer;
     std::size_t mNumIndices; // assume it can be made up as a square
 //    int mRenderMode;
-    std::vector<mass> meshes;
+    std::vector<mass> mMeshes;
+
+    float slt; // spring length
+
+    // Define the damping force
+    math::Vector fd;
+
+    // Gravity force
+    math::Vector fg; // gravity to the ground
+
+    // Total force
+    math::Vector f;
 };
 
 #endif

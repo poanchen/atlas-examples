@@ -36,12 +36,13 @@ namespace gl = atlas::gl;
 
 Cloth::Cloth() :
     mVertexBuffer(GL_ARRAY_BUFFER),
+    fg(math::Vector(0, CLOTH_DEFAULT_GRAVITY_FORCE, 0)),
 //    mIndexBuffer(GL_ELEMENT_ARRAY_BUFFER),
 //    mRenderMode(1),
-//    mNumIndices(150),
-    mNumIndices(16),
+    mNumIndices(400),
+//    mNumIndices(16),
 //    mNumIndices(4),
-    meshes(mNumIndices)
+    mMeshes(mNumIndices)
 {
     mModel = math::Matrix4(1.0f);
 
@@ -50,7 +51,7 @@ Cloth::Cloth() :
 //    {
 //        for (int j = 0; j < 10; j++)
 //        {
-//            meshes[10 * i + j].pos = { 0.0f + j + i, 0.0f, 0.0f - j };
+//            mMeshes[10 * i + j].pos = { 0.0f + j + i, 0.0f, 0.0f - j };
 //        }
 //    }
 
@@ -60,8 +61,9 @@ Cloth::Cloth() :
     {
         for (int j = 0; j < width; j++)
         {
-            meshes[width * i + j].pos = { 0.0f + j + i, 0.0f, 0.0f - j};
-            meshes[width * i + j].weight = CLOTH_DEFAULT_MASS_WEIGHT;
+            mMeshes[width * i + j].pos = { 0.0f + j + i, 0.0f, 0.0f - j }; // initial position
+            mMeshes[width * i + j].vt = { 1.0f, 1.0f, 1.0f }; // initial velocity
+            mMeshes[width * i + j].weight = CLOTH_DEFAULT_MASS_WEIGHT;
 
             /*
             * define its neighbour
@@ -81,33 +83,33 @@ Cloth::Cloth() :
             if (i == 0) {
                 //std::printf("no top");
                 //std::printf(",");
-                meshes[width * i + j].neighbours[0].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
+                mMeshes[width * i + j].neighbours[0].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
             } else {
-                meshes[width * i + j].neighbours[0] = { width * i + j - width, { CLOTH_DEFAULT_SPRING_SKS, CLOTH_DEFAULT_SPRING_KD, CLOTH_DEFAULT_SPRING_SL } };
+                mMeshes[width * i + j].neighbours[0] = { width * i + j - width, { CLOTH_DEFAULT_SPRING_SKSS, CLOTH_DEFAULT_SPRING_KD, CLOTH_DEFAULT_SPRING_SL } };
             }
             // if there is buttom
             if (i + 1 == height) {
                 //std::printf("no buttom");
                 //std::printf(",");
-                meshes[width * i + j].neighbours[1].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
+                mMeshes[width * i + j].neighbours[1].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
             } else {
-                meshes[width * i + j].neighbours[1] = { width * i + j + width, { CLOTH_DEFAULT_SPRING_SKS, CLOTH_DEFAULT_SPRING_KD, CLOTH_DEFAULT_SPRING_SL } };
+                mMeshes[width * i + j].neighbours[1] = { width * i + j + width, { CLOTH_DEFAULT_SPRING_SKSS, CLOTH_DEFAULT_SPRING_KD, CLOTH_DEFAULT_SPRING_SL } };
             }
             // if there is right
             if (j + 1 == width) {
                 //std::printf("no right");
                 //std::printf(",");
-                meshes[width * i + j].neighbours[2].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
+                mMeshes[width * i + j].neighbours[2].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
             } else {
-                meshes[width * i + j].neighbours[2] = { width * i + j + 1, { CLOTH_DEFAULT_SPRING_SKS, CLOTH_DEFAULT_SPRING_KD, CLOTH_DEFAULT_SPRING_SL } };
+                mMeshes[width * i + j].neighbours[2] = { width * i + j + 1, { CLOTH_DEFAULT_SPRING_SKSS, CLOTH_DEFAULT_SPRING_KD, CLOTH_DEFAULT_SPRING_SL } };
             }
             // if there is left
             if (j == 0) {
                 //std::printf("no left");
                 //std::printf(",");
-                meshes[width * i + j].neighbours[3].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
+                mMeshes[width * i + j].neighbours[3].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
             } else {
-                meshes[width * i + j].neighbours[3] = { width * i + j - 1, { CLOTH_DEFAULT_SPRING_SKS, CLOTH_DEFAULT_SPRING_KD, CLOTH_DEFAULT_SPRING_SL } };
+                mMeshes[width * i + j].neighbours[3] = { width * i + j - 1, { CLOTH_DEFAULT_SPRING_SKSS, CLOTH_DEFAULT_SPRING_KD, CLOTH_DEFAULT_SPRING_SL } };
             }
             //std::printf("\n");
             /* Shear springs
@@ -123,33 +125,33 @@ Cloth::Cloth() :
             if (i == 0 || j + 1 == width) {
                 //std::printf("no top right");
                 //std::printf(",");
-                meshes[width * i + j].neighbours[4].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
+                mMeshes[width * i + j].neighbours[4].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
             } else {
-                meshes[width * i + j].neighbours[4] = { width * i + j - width + 1, { CLOTH_DEFAULT_SPRING_SKS, CLOTH_DEFAULT_SPRING_KD, CLOTH_DEFAULT_SPRING_SL } };
+                mMeshes[width * i + j].neighbours[4] = { width * i + j - width + 1, { CLOTH_DEFAULT_SPRING_SKSD, CLOTH_DEFAULT_SPRING_KD, CLOTH_DEFAULT_SPRING_DW } };
             }
             // if there is top left
             if (i == 0 || j == 0) {
                 //std::printf("no top left");
                 //std::printf(",");
-                meshes[width * i + j].neighbours[5].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
+                mMeshes[width * i + j].neighbours[5].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
             } else {
-                meshes[width * i + j].neighbours[5] = { width * i + j - width - 1, { CLOTH_DEFAULT_SPRING_SKS, CLOTH_DEFAULT_SPRING_KD, CLOTH_DEFAULT_SPRING_SL } };
+                mMeshes[width * i + j].neighbours[5] = { width * i + j - width - 1, { CLOTH_DEFAULT_SPRING_SKSD, CLOTH_DEFAULT_SPRING_KD, CLOTH_DEFAULT_SPRING_DW } };
             }
             // if there is buttom right
             if (i + 1 == height || j + 1 == width) {
                 //std::printf("no buttom right");
                 //std::printf(",");
-                meshes[width * i + j].neighbours[6].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
+                mMeshes[width * i + j].neighbours[6].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
             } else {
-                meshes[width * i + j].neighbours[6] = { width * i + j + width + 1, { CLOTH_DEFAULT_SPRING_SKS, CLOTH_DEFAULT_SPRING_KD, CLOTH_DEFAULT_SPRING_SL } };
+                mMeshes[width * i + j].neighbours[6] = { width * i + j + width + 1, { CLOTH_DEFAULT_SPRING_SKSD, CLOTH_DEFAULT_SPRING_KD, CLOTH_DEFAULT_SPRING_DW } };
             }
             // if there is buttom left
             if (i + 1 == height || j == 0) {
                 //std::printf("no buttom left");
                 //std::printf(",");
-                meshes[width * i + j].neighbours[7].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
+                mMeshes[width * i + j].neighbours[7].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
             } else {
-                meshes[width * i + j].neighbours[7] = { width * i + j + width - 1, { CLOTH_DEFAULT_SPRING_SKS, CLOTH_DEFAULT_SPRING_KD, CLOTH_DEFAULT_SPRING_SL } };
+                mMeshes[width * i + j].neighbours[7] = { width * i + j + width - 1, { CLOTH_DEFAULT_SPRING_SKSD, CLOTH_DEFAULT_SPRING_KD, CLOTH_DEFAULT_SPRING_DW } };
             }
 //            std::printf("\n");
             /* Bending springs
@@ -169,33 +171,33 @@ Cloth::Cloth() :
             if (i - 2 < 0) {
                 //std::printf("no top top");
                 //std::printf(",");
-                meshes[width * i + j].neighbours[8].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
+                mMeshes[width * i + j].neighbours[8].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
             } else {
-                meshes[width * i + j].neighbours[8] = { width * i + j - width * 2, { CLOTH_DEFAULT_SPRING_SKS, CLOTH_DEFAULT_SPRING_KD, CLOTH_DEFAULT_SPRING_SL } };
+                mMeshes[width * i + j].neighbours[8] = { width * i + j - width * 2, { CLOTH_DEFAULT_SPRING_SKSB, CLOTH_DEFAULT_SPRING_KD, CLOTH_DEFAULT_SPRING_SL * 2 } };
             }
             // if there is buttom buttom
             if (i + 2 > height - 1) {
                 //std::printf("no buttom buttom");
                 //std::printf(",");
-                meshes[width * i + j].neighbours[9].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
+                mMeshes[width * i + j].neighbours[9].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
             } else {
-                meshes[width * i + j].neighbours[9] = { width * i + j + width * 2, { CLOTH_DEFAULT_SPRING_SKS, CLOTH_DEFAULT_SPRING_KD, CLOTH_DEFAULT_SPRING_SL } };
+                mMeshes[width * i + j].neighbours[9] = { width * i + j + width * 2, { CLOTH_DEFAULT_SPRING_SKSB, CLOTH_DEFAULT_SPRING_KD, CLOTH_DEFAULT_SPRING_SL * 2 } };
             }
             // if there is right right
             if (j + 2 > width - 1) {
                 //std::printf("no right right");
                 //std::printf(",");
-                meshes[width * i + j].neighbours[10].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
+                mMeshes[width * i + j].neighbours[10].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
             } else {
-                meshes[width * i + j].neighbours[10] = { width * i + j + 2, { CLOTH_DEFAULT_SPRING_SKS, CLOTH_DEFAULT_SPRING_KD, CLOTH_DEFAULT_SPRING_SL } };
+                mMeshes[width * i + j].neighbours[10] = { width * i + j + 2, { CLOTH_DEFAULT_SPRING_SKSB, CLOTH_DEFAULT_SPRING_KD, CLOTH_DEFAULT_SPRING_SL * 2 } };
             }
             // if there is left left
             if (j - 2 < 0) {
                 //std::printf("no left left");
                 //std::printf(",");
-                meshes[width * i + j].neighbours[11].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
+                mMeshes[width * i + j].neighbours[11].index = CLOTH_DEFAULT_MASS_NO_NEIGHBOUR;
             } else {
-                meshes[width * i + j].neighbours[11] = { width * i + j - 2, { CLOTH_DEFAULT_SPRING_SKS, CLOTH_DEFAULT_SPRING_KD, CLOTH_DEFAULT_SPRING_SL } };
+                mMeshes[width * i + j].neighbours[11] = { width * i + j - 2, { CLOTH_DEFAULT_SPRING_SKSB, CLOTH_DEFAULT_SPRING_KD, CLOTH_DEFAULT_SPRING_SL * 2 } };
             }
             //std::printf("\n");
         }
@@ -208,45 +210,45 @@ Cloth::Cloth() :
 //        {
 //            std::printf("Index: %d with ", width * i + j);
 //            std::printf("[%d, %d] => ", i, j);
-//            std::printf("weight: %f | ", meshes[width * i + j].weight);
+//            std::printf("weight: %f | ", mMeshes[width * i + j].weight);
 //            for (int k = 0; k < 12; k++)
 //            {
 //                switch (k) {
 //                case 0:
-//                    std::printf("top: %d, ", meshes[width * i + j].neighbours[k].index);
+//                    std::printf("top: %d, ", mMeshes[width * i + j].neighbours[k].index);
 //                    break;
 //                case 1:
-//                    std::printf("buttom: %d, ", meshes[width * i + j].neighbours[k].index);
+//                    std::printf("buttom: %d, ", mMeshes[width * i + j].neighbours[k].index);
 //                    break;
 //                case 2:
-//                    std::printf("right: %d, ", meshes[width * i + j].neighbours[k].index);
+//                    std::printf("right: %d, ", mMeshes[width * i + j].neighbours[k].index);
 //                    break;
 //                case 3:
-//                    std::printf("left: %d, ", meshes[width * i + j].neighbours[k].index);
+//                    std::printf("left: %d, ", mMeshes[width * i + j].neighbours[k].index);
 //                    break;
 //                case 4:
-//                    std::printf("top right: %d, ", meshes[width * i + j].neighbours[k].index);
+//                    std::printf("top right: %d, ", mMeshes[width * i + j].neighbours[k].index);
 //                    break;
 //                case 5:
-//                    std::printf("top left: %d, ", meshes[width * i + j].neighbours[k].index);
+//                    std::printf("top left: %d, ", mMeshes[width * i + j].neighbours[k].index);
 //                    break;
 //                case 6:
-//                    std::printf("buttom right: %d, ", meshes[width * i + j].neighbours[k].index);
+//                    std::printf("buttom right: %d, ", mMeshes[width * i + j].neighbours[k].index);
 //                    break;
 //                case 7:
-//                    std::printf("buttom left: %d, ", meshes[width * i + j].neighbours[k].index);
+//                    std::printf("buttom left: %d, ", mMeshes[width * i + j].neighbours[k].index);
 //                    break;
 //                case 8:
-//                    std::printf("top top: %d, ", meshes[width * i + j].neighbours[k].index);
+//                    std::printf("top top: %d, ", mMeshes[width * i + j].neighbours[k].index);
 //                    break;
 //                case 9:
-//                    std::printf("buttom buttom: %d, ", meshes[width * i + j].neighbours[k].index);
+//                    std::printf("buttom buttom: %d, ", mMeshes[width * i + j].neighbours[k].index);
 //                    break;
 //                case 10:
-//                    std::printf("right right: %d, ", meshes[width * i + j].neighbours[k].index);
+//                    std::printf("right right: %d, ", mMeshes[width * i + j].neighbours[k].index);
 //                    break;
 //                case 11:
-//                    std::printf("left left: %d, ", meshes[width * i + j].neighbours[k].index);
+//                    std::printf("left left: %d, ", mMeshes[width * i + j].neighbours[k].index);
 //                    break;
 //                default:
 //                    break;
@@ -255,16 +257,6 @@ Cloth::Cloth() :
 //            std::printf("\n");
 //        }
 //    }
-
-//    4
-//    meshes[0].pos = { 0.0f, 0.0f, 0.0f };
-//    meshes[0].weight = CLOTH_DEFAULT_MASS_WEIGHT;
-//    meshes[1].pos = { 10.0f, 0.0f, -10.0f };
-//    meshes[1].weight = CLOTH_DEFAULT_MASS_WEIGHT;
-//    meshes[2].pos = { 0.0f, 0.0f, 10.0f };
-//    meshes[2].weight = CLOTH_DEFAULT_MASS_WEIGHT;
-//    meshes[3].pos = { 10.0f, 0.0f, 0.0f };
-//    meshes[3].weight = CLOTH_DEFAULT_MASS_WEIGHT;
 
 //    std::vector<gl::ShaderUnit> shaders
 //    {
@@ -278,8 +270,8 @@ Cloth::Cloth() :
 
     mVao.bindVertexArray();
     mVertexBuffer.bindBuffer();
-    mVertexBuffer.bufferData(sizeof(struct mass) * meshes.size(),
-        meshes.data(), GL_DYNAMIC_DRAW);
+    mVertexBuffer.bufferData(sizeof(struct mass) * mMeshes.size(),
+        mMeshes.data(), GL_DYNAMIC_DRAW);
     // try using CLOTHS_LAYOUT_LOCATION
     mVertexBuffer.vertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(struct mass),
         gl::bufferOffset<float>(0));
@@ -288,7 +280,7 @@ Cloth::Cloth() :
 
 //    mIndexBuffer.bindBuffer();
 //    mIndexBuffer.bufferData(gl::size<GLuint>(mNumIndices),
-//        meshes.data(), GL_DYNAMIC_DRAW);
+//        mMeshes.data(), GL_DYNAMIC_DRAW);
     mVao.unBindVertexArray();
 
     // Load the shaders here.
@@ -344,7 +336,7 @@ void Cloth::renderGeometry(math::Matrix4 const& projection,
 
 //    mIndexBuffer.bindBuffer();
 
-    glPointSize(15.0f);
+    glPointSize(10.0f);
 //    float rgb = (64.0f / 255.0f);
 //    glUniform4f(mUniforms["colour"], rgb, rgb, rgb, 1);
     glDrawArrays(GL_POINTS, 0, (int)mNumIndices);
@@ -363,14 +355,75 @@ void Cloth::renderGeometry(math::Matrix4 const& projection,
 
 void Cloth::updateGeometry(atlas::core::Time<> const& t)
 {
-//    meshes[0].pos[0] -= 0.1f;
-//    meshes[1].pos[2] += 0.1f;
+    std::vector<mass> meshes = mMeshes;
+//    int width = (int) std::sqrt(mNumIndices);
+    for (int i = 0; i < mNumIndices; i++)
+    {
+        // make sure we do not update the fixed point
+//        if (i < width) {
+//            continue;
+//        }
+
+//        std::printf("Index %d: ", i);
+
+        // Compute the sum of kd from all its neighbours
+        float sumKd = 0.0f;
+        for (int j = 0; j < 12; j++)
+        {
+            // we simply ignore all the neighbours that does not exist
+            if (meshes[i].neighbours[j].index == -1) {
+                continue;
+            }
+
+            sumKd += meshes[i].neighbours[j].kd;
+        }
+
+        // Compute the damping force fd
+        fd = -sumKd * meshes[i].vt;
+
+        // Compute the total force
+        f = fg + fd;
+
+        // Compute the sum of spring force fs from all its neighbours
+        for (int j = 0; j < 12; j++)
+        {
+            // we simply ignore all the neighbours that does not exist
+            if (meshes[i].neighbours[j].index == -1) {
+                continue;
+            }
+
+//            std::printf("%d, ", meshes[i].neighbours[j].index);
+
+            // Compute the current spring length
+            const struct mass currentParent = meshes[meshes[i].neighbours[j].index];
+            slt = glm::length(currentParent.pos - meshes[i].pos);
+            f += math::Vector(-currentParent.neighbours[j].sks * (meshes[i].neighbours[j].sl - slt) * glm::normalize(currentParent.pos - meshes[i].pos));
+        }
+
+        math::Vector a = f / meshes[i].weight;
+        math::Vector v = meshes[i].vt * t.deltaTime + 0.5f * a * t.deltaTime * t.deltaTime;
+
+        // Update each mass velocity
+        meshes[i].vt = meshes[i].vt + a * t.deltaTime;
+
+        // Update each mass position
+        meshes[i].pos = meshes[i].pos + v;
+
+
+//        std::printf("sumKd: %f, ", sumKd);
+//        std::printf("fd: [%f, %f, %f], ", fd[0], fd[1], fd[2]);
+//        std::printf("meshes[%d].pos: [%f, %f, %f], ", i, meshes[i].pos[0], meshes[i].pos[1], meshes[i].pos[2]);
+//        std::printf("meshes[%d].vt: [%f, %f, %f]", i, meshes[i].vt[0], meshes[i].vt[1], meshes[i].vt[2]);
+//        std::printf("\n");
+    }
+
+    mMeshes = meshes;
 
     // update position
     mVao.bindVertexArray();
     mVertexBuffer.bindBuffer();
-    mVertexBuffer.bufferData(sizeof(struct mass) * meshes.size(),
-        meshes.data(), GL_DYNAMIC_DRAW);
+    mVertexBuffer.bufferData(sizeof(struct mass) * mMeshes.size(),
+        mMeshes.data(), GL_DYNAMIC_DRAW);
     mVertexBuffer.unBindBuffer();
     mVao.unBindVertexArray();
 }
