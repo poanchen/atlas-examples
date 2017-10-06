@@ -360,9 +360,48 @@ void Cloth::updateGeometry(atlas::core::Time<> const& t)
     for (int i = 0; i < mNumIndices; i++)
     {
         // make sure we do not update the fixed point
-//        if (i < width) {
-//            continue;
-//        }
+        switch(CLOTH_DEFAULT_KIND)
+        {
+        case 0:
+            // second row fixed
+            if ((i > 19 && i < 39)) {
+                continue;
+            }
+            break;
+        case 1:
+            // left five of second row and right five of second row fixed
+            if ((i > 19 && i < 25) || (i > 34 && i < 40)) {
+                continue;
+            }
+            break;
+        case 2:
+            // second row and last second row fixed
+            if ((i > 19 && i < 39) || (i > 359 && i < 379)) {
+                continue;
+            }
+            break;
+        case 3:
+            // last second row fixed
+            if (i > 359 && i < 379) {
+                continue;
+            }
+            break;
+        case 4:
+            // middle row fixed
+            if (i > 200 && i < 219) {
+                continue;
+            }
+            break;
+        case 5:
+            // five middle point in middle row fixed
+            if (i > 204 && i < 210) {
+                continue;
+            }
+            break;
+        case 6:
+            // free fall
+            break;
+        }
 
 //        std::printf("Index %d: ", i);
 
@@ -371,7 +410,7 @@ void Cloth::updateGeometry(atlas::core::Time<> const& t)
         for (int j = 0; j < 12; j++)
         {
             // we simply ignore all the neighbours that does not exist
-            if (meshes[i].neighbours[j].index == -1) {
+            if (meshes[i].neighbours[j].index == CLOTH_DEFAULT_MASS_NO_NEIGHBOUR) {
                 continue;
             }
 
@@ -388,7 +427,7 @@ void Cloth::updateGeometry(atlas::core::Time<> const& t)
         for (int j = 0; j < 12; j++)
         {
             // we simply ignore all the neighbours that does not exist
-            if (meshes[i].neighbours[j].index == -1) {
+            if (meshes[i].neighbours[j].index == CLOTH_DEFAULT_MASS_NO_NEIGHBOUR) {
                 continue;
             }
 

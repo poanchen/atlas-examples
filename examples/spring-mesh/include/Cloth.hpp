@@ -13,6 +13,15 @@
 #define CLOTH_DEFAULT_SPRING_DW 0.7f
 #define CLOTH_DEFAULT_GRAVITY_FORCE -9.087f
 
+// 0: second row fixed
+// 1: left five of second row and right five of second row fixed
+// 2: second row and last second row fixed
+// 3: last second row fixed
+// 4: middle row fixed
+// 5: five middle point in middle row fixed
+// 6: free fall
+#define CLOTH_DEFAULT_KIND 0
+
 #include "atlas/tools/Tools.hpp"
 #include "atlas/utils/Geometry.hpp"
 #include "atlas/gl/VertexArrayObject.hpp"
