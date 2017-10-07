@@ -44,3 +44,9 @@ To run the simple-animation program,
 ```
 ./examples/simple-animation/simple-animation
 ```
+
+## Demo
+![Loading the first image](demo.gif)
+
+
+![Loading the second image](demo1.gif)
