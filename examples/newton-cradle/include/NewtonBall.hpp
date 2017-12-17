@@ -38,6 +38,7 @@ private:
         float rate;
         float angle;
         float weight;
+        bool collide;
     };
 
 private:
@@ -58,6 +59,12 @@ private:
 
     // Total force
     math::Vector f;
+
+    int current;
+
+    float diff;
+    // the larger it gets the quicker the newtons ball slows down
+    float coff;
 };
 
 #endif

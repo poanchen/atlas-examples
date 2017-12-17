@@ -13,7 +13,10 @@ NewtonBall::NewtonBall() :
     // slt(NEWTON_BALL_DEFAULT_SPRING_L),
 //    mIndexBuffer(GL_ELEMENT_ARRAY_BUFFER),
 //    mRenderMode(1),
-    mNumIndices(1),
+    coff(0.1),
+    current(0),
+    mNumIndices(2),
+    diff(0.1),
     mMeshes(mNumIndices)
 {
     mModel = math::Matrix4(1.0f);
@@ -30,8 +33,14 @@ NewtonBall::NewtonBall() :
     // mMeshes[0].angle = 20.0f;
     mMeshes[0].angle = 100.0f;
     mMeshes[0].weight = 1.0f;
+    mMeshes[0].collide = false;
     // mMeshes[0].angle = NEWTON_BALL_DEFAULT_SPRING_ANG;
     // mMeshes[1].pos = { 0.0f, 0.0f, -10.0f };
+    mMeshes[1].pos = { 0.5f, -1.0f, 0.0f };
+    mMeshes[1].vt = { 0.0f, 0.0f, 0.0f };
+    mMeshes[1].angle = 100.0f;
+    mMeshes[1].weight = 1.0f;
+    mMeshes[1].collide = false;
 
 //    std::vector<gl::ShaderUnit> shaders
 //    {
@@ -154,15 +163,14 @@ void NewtonBall::updateGeometry(atlas::core::Time<> const& t)
     // Update mass velocity
     // meshes[0].vt -= a * t.deltaTime;
 
-    // math::Vector k = a * t.deltaTime;
-
+    // math::Vector k = a * t.deltaTime;current
     // std::printf("v[1]: %f\n", v[1]);
     // std::printf("v[2]: %f\n", v[2]);
     // meshes[0].pos = meshes[0].pos + v;
 
     // Update mass angle
-    meshes[0].angle += t.deltaTime * meshes[0].rate;
-    meshes[0].rate -= t.deltaTime * (((fg/slt) * std::sin(meshes[0].angle))[1] + (0.1/(meshes[0].weight*slt*slt)) * meshes[0].rate);
+    meshes[current].angle += t.deltaTime * meshes[current].rate;
+    meshes[current].rate -= t.deltaTime * (((fg/slt) * std::sin(meshes[current].angle))[1] + (coff/(meshes[current].weight*slt*slt)) * meshes[current].rate);
     // meshes[0].rate -= t.deltaTime * ((fg/slt) * std::sin(meshes[0].angle) + (0.1/(meshes[0].weight*slt*slt)) * meshes[0].rate);
     // std::printf("%f\n", ((fg/slt) * std::sin(meshes[0].angle) + (0.1/(meshes[0].weight*slt*slt)))[1]);
     // meshes[0].rate -= ((fg/slt*std::sin(glm::radians(meshes[0].angle)+0.1))[1] * meshes[0].rate) * t.deltaTime;
@@ -170,7 +178,8 @@ void NewtonBall::updateGeometry(atlas::core::Time<> const& t)
     // std::printf("%f\n", (fg/slt*std::sin(glm::radians(meshes[0].angle)+0.1)*meshes[0].rate) * t.deltaTime);
     // meshes[0].angle += v[1];
     // meshes[0].angle += 0.01;
-    // std::printf("%f\n", meshes[0].angle);
+    // std::printf("angle:%f\n", meshes[0].angle);
+    // std::printf("rate:%f\n", meshes[0].rate);
 
     // meshes[0].angle = 20.0*std::cos(std::sqrt(glm::abs(fg)[1])*t.deltaTime);
     // std::printf("t.deltaTime: %f\n", t.deltaTime);
@@ -179,11 +188,32 @@ void NewtonBall::updateGeometry(atlas::core::Time<> const& t)
     // float sideAngle = (180-meshes[0].angle)/2.0f;
     // float d = slt*std::sin(glm::radians(meshes[0].angle))/std::sin(glm::radians(sideAngle));
     // meshes[0].pos = { d*std::cos(90-sideAngle), d*std::sin(90-sideAngle), 0.0f };
-    meshes[0].pos = { std::sin(meshes[0].angle), std::cos(meshes[0].angle), 0.0f };
+    // std::printf("x:%f\n", std::sin(meshes[0].angle));
+    // std::printf("x:%f\n", std::sin(meshes[0].angle)*slt);
+    // std::printf("y:%f\n", std::cos(meshes[0].angle));
+    // std::printf("y:%f\n", std::cos(meshes[0].angle)*slt);
+    meshes[current].pos = { std::sin(meshes[current].angle), std::cos(meshes[current].angle), 0.0f };
+
+    if (current == 1) {
+        meshes[current].pos[0] += 1;
+    }
 
     // print KE and PE
-    std::printf("KE: %f\n", 0.5 * meshes[0].weight * slt * std::cos(meshes[0].angle) + 0.5 * meshes[0].weight * slt * std::sin(meshes[0].angle));
-    std::printf("PE: %f\n\n", meshes[0].weight * fg[1] * std::cos(meshes[0].angle));
+    // std::printf("KE: %f\n", 0.5 * meshes[0].weight * slt * std::cos(meshes[0].angle) + 0.5 * meshes[0].weight * slt * std::sin(meshes[0].angle));
+    // std::printf("PE: %f\n\n", meshes[0].weight * fg[1] * std::cos(meshes[0].angle));
+
+    // std::printf("x:%f\n", glm::abs(0.5 * current - meshes[current].pos[0]));
+    // std::printf("y:%f\n", glm::abs(meshes[current].pos[1] + 1));
+    if (glm::abs(0.5 * current - meshes[current].pos[0]) < diff &&
+        glm::abs(meshes[current].pos[1] + 1) < diff &&
+        !meshes[current].collide) {
+        // may not necessary work for multiple balls
+        meshes[!current] = meshes[current];
+        meshes[current].rate = 0;
+        meshes[current].angle = 0;
+        meshes[current].collide = true;
+        current = !current;
+    }
 
     mMeshes = meshes;
 
