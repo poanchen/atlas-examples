@@ -4,7 +4,7 @@
 #pragma once
 
 #define NEWTON_BALL_DEFAULT_MASS_WEIGHT 1.0f
-#define NEWTON_BALL_DEFAULT_SPRING_ANG 60.0f
+#define NEWTON_BALL_DEFAULT_SPRING_ANG 100.0f
 #define NEWTON_BALL_DEFAULT_SPRING_KD 0.5f
 #define NEWTON_BALL_DEFAULT_SPRING_SL 0.5f
 #define NEWTON_BALL_DEFAULT_SPRING_DW 0.7f
@@ -31,10 +31,11 @@ public:
     // Override this to animate things.
     void updateGeometry(atlas::core::Time<> const& t) override;
 
+    void setNextNewtonBall();
+
 private:
     struct mass {
         math::Vector pos;
-        math::Vector vt;
         float rate;
         float angle;
         float weight;
@@ -61,6 +62,7 @@ private:
     math::Vector f;
 
     int current;
+    int prev;
 
     float diff;
     // the larger it gets the quicker the newtons ball slows down

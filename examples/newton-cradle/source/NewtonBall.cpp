@@ -15,32 +15,27 @@ NewtonBall::NewtonBall() :
 //    mRenderMode(1),
     coff(0.1),
     current(0),
+    prev(0),
     mNumIndices(2),
     diff(0.1),
     mMeshes(mNumIndices)
 {
     mModel = math::Matrix4(1.0f);
 
-    // mMeshes[0].pos = { 0.0f, 0.0f, 0.0f };
-    // mMeshes[1].pos = { 12.0f, 12.0f, 12.0f };
-
-    // 2
-    // initial position of the Newton Ball
-    // mMeshes[0].pos = { 0.0f, 0.0f, 0.0f };
     mMeshes[0].pos = { 0.0f, 0.0f, 0.0f };
-    // mMeshes[0].pos = { 0.0f, 0.0f, 0.0f };
-    mMeshes[0].vt = { 0.0f, 0.0f, 0.0f };
-    // mMeshes[0].angle = 20.0f;
-    mMeshes[0].angle = 100.0f;
+    mMeshes[0].angle = NEWTON_BALL_DEFAULT_SPRING_ANG;
     mMeshes[0].weight = 1.0f;
     mMeshes[0].collide = false;
-    // mMeshes[0].angle = NEWTON_BALL_DEFAULT_SPRING_ANG;
-    // mMeshes[1].pos = { 0.0f, 0.0f, -10.0f };
+
     mMeshes[1].pos = { 0.5f, -1.0f, 0.0f };
-    mMeshes[1].vt = { 0.0f, 0.0f, 0.0f };
-    mMeshes[1].angle = 100.0f;
+    mMeshes[1].angle = 0.0f;
     mMeshes[1].weight = 1.0f;
     mMeshes[1].collide = false;
+
+    // mMeshes[2].pos = { 1.0f, -1.0f, 0.0f };
+    // mMeshes[2].angle = 0.0f;
+    // mMeshes[2].weight = 1.0f;
+    // mMeshes[2].collide = false;
 
 //    std::vector<gl::ShaderUnit> shaders
 //    {
@@ -208,11 +203,11 @@ void NewtonBall::updateGeometry(atlas::core::Time<> const& t)
         glm::abs(meshes[current].pos[1] + 1) < diff &&
         !meshes[current].collide) {
         // may not necessary work for multiple balls
-        meshes[!current] = meshes[current];
-        meshes[current].rate = 0;
-        meshes[current].angle = 0;
-        meshes[current].collide = true;
-        current = !current;
+        NewtonBall::setNextNewtonBall();
+        meshes[current] = meshes[prev];
+        meshes[prev].rate = 0;
+        meshes[prev].angle = 0;
+        meshes[prev].collide = true;
     }
 
     mMeshes = meshes;
@@ -224,4 +219,23 @@ void NewtonBall::updateGeometry(atlas::core::Time<> const& t)
         mMeshes.data(), GL_DYNAMIC_DRAW);
     mVertexBuffer.unBindBuffer();
     mVao.unBindVertexArray();
+}
+
+void NewtonBall::setNextNewtonBall()
+{
+    int temp;
+
+    if (current == prev) {
+        current++;
+    } else if (current > prev && current + 1 < mNumIndices) {
+        prev = current;
+        current++;
+    } else if (current > prev && current + 1 == mNumIndices || current < prev && current == 0) {
+        temp = current;
+        current = prev;
+        prev = temp;
+    } else if (current < prev && current > 0) {
+        prev = current;
+        current--;
+    }
 }
