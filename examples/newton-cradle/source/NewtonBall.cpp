@@ -13,7 +13,7 @@ NewtonBall::NewtonBall() :
     // slt(NEWTON_BALL_DEFAULT_SPRING_L),
 //    mIndexBuffer(GL_ELEMENT_ARRAY_BUFFER),
 //    mRenderMode(1),
-    coff(0.1),
+    coff(0.3),
     current(0),
     prev(0),
     mNumIndices(2),

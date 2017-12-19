@@ -48,5 +48,6 @@ To run the simple-animation program,
 ## Demo
 ![Loading the first image](demo.gif)
 
-
 ![Loading the second image](demo1.gif)
+
+![Loading the third image](demo2.gif)
